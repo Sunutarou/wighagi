@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゆたかママのウィッグ狩り隊</title>
+
+<style>
+body{
+    margin:0;
+    padding:0;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    font-family:sans-serif;
+    overflow-x:hidden;
+    user-select:none;
+    color:white;
+}
+
+.screen{
+    width:100%;
+    max-width:768px;
+}
+
+#main-screen{ position:relative; }
+
+#main-image{
+    width:100%;
+    display:block;
+}
+
+.hotspot{
+    position:absolute;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+}
+
+#start-btn{
+    left:13%;
+    top:50%;
+    width:74%;
+    height:10%;
+}
+
+#ranking-btn{
+    left:13%;
+    top:62%;
+    width:74%;
+    height:8%;
+}
+
+#rule-screen{
+    display:none;
+    background:#111;
+    min-height:100vh;
+    padding:15px;
+    box-sizing:border-box;
+}
+
+.rule-box{
+    border:3px solid hotpink;
+    border-radius:20px;
+    padding:20px;
+    font-size:22px;
+    line-height:1.8;
+}
+
+#rule-start-btn,
+#reveal-btn,
+#next-btn,
+#back-title-btn{
+    display:block;
+    margin:25px auto;
+    padding:15px 40px;
+    font-size:28px;
+    border:none;
+    border-radius:15px;
+    background:hotpink;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#game-screen{
+    display:none;
+    min-height:100vh;
+    padding:15px;
+    box-sizing:border-box;
+    background:#000;
+}
+
+#game-info{
+    display:flex;
+    justify-content:space-between;
+    font-size:24px;
+    margin-bottom:10px;
+    color:hotpink;
+    font-weight:bold;
+}
+
+#photo-box{
+    width:100%;
+    height:55vh;
+    border:3px solid hotpink;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:#111;
+}
+
+#question-image{
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+}
+
+#question-text{
+    text-align:center;
+    font-size:28px;
+    margin:18px 0;
+    line-height:1.5;
+}
+
+#choice-area{
+    display:flex;
+    gap:12px;
+}
+
+.choice-btn{
+    flex:1;
+    font-size:30px;
+    padding:20px 5px;
+    border-radius:18px;
+    border:3px solid gold;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#hag-btn{ background:#c00050; }
+#skip-btn{ background:#5b168f; }
+
+#reveal-btn,
+#next-btn{
+    display:none;
+}
+
+#score-box{
+    margin-top:18px;
+    border:3px solid hotpink;
+    border-radius:20px;
+    padding:15px;
+    font-size:26px;
+    text-align:center;
+}
+
+#result-screen{
+    display:none;
+    min-height:100vh;
+    padding:20px;
+    box-sizing:border-box;
+    background:#000;
+    text-align:center;
+}
+
+#result-title{
+    font-size:38px;
+    color:hotpink;
+    font-weight:bold;
+    margin-top:40px;
+}
+
+#result-message{
+    font-size:26px;
+    line-height:1.6;
+    margin-top:25px;
+}
+
+/* =======================
+   メイン画面：本日のベスト表示
+======================= */
+#best-overlay{
+    position:absolute;
+    left:6%;
+    top:86.5%;
+    width:88%;
+    height:10%;
+    pointer-events:none;
+}
+
+.best-number{
+    position:absolute;
+    top:25%;
+    width:32%;
+    text-align:center;
+    font-size:44px;
+    font-weight:bold;
+    color:#ffd84d;
+    text-shadow:0 0 8px #ff00aa, 0 0 12px #000;
+}
+
+#best-count-main{
+    left:6%;
+}
+
+#best-score-main{
+    right:6%;
+}
+
+@media (max-width:480px){
+    .best-number{
+        font-size:34px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="main-screen" class="screen">
+    <img id="main-image" src="images/wighagi.main.jpg" alt="メイン画面">
+    <button id="start-btn" class="hotspot"></button>
+    <button id="ranking-btn" class="hotspot"></button>
+
+    <div id="best-overlay">
+        <div id="best-count-main" class="best-number">0</div>
+        <div id="best-score-main" class="best-number">0</div>
+    </div>
+</div>
+
+<div id="rule-screen" class="screen">
+    <div class="rule-box">
+        🍺 ルール説明<br><br>
+
+    ゆたかママは<br>
+    ウィッグを剥ぐのが趣味です。<br><br>
+
+    写真を見て<br><br>
+
+    🎀 ウィッグ<br>
+    🧢 帽子<br>
+    🎀 ヘアバンド<br><br>
+
+    だと思ったら<br><br>
+
+    ✂️「剥ぐ」<br><br>
+
+    を押してください。<br><br>
+
+    ────────────────<br><br>
+
+    👨 自毛のみ<br><br>
+
+    だと思ったら<br><br>
+
+    🙈「スキップ」<br><br>
+
+    を押してください。<br><br>
+
+    ────────────────<br><br>
+
+    ⚡ 早く判断するほど高得点！<br><br>
+
+    1秒以内：30点<br>
+    2秒以内：20点<br>
+    3秒以内：5点<br><br>
+
+    💀 3秒経過、または間違えるとゲームオーバー！<br><br>
+
+    🏆 何人見抜けるかな？<br><br>
+
+    <button id="rule-start-btn">ゲーム開始</button>
+</div>
+
+</div>
+
+<div id="game-screen" class="screen">
+    <div id="game-info">
+        <div>残り <span id="time-left">3.0</span>秒</div>
+    </div>
+
+<div id="photo-box">
+    <img id="question-image" src="" alt="問題画像">
+</div>
+
+<div id="question-text">この人は……？</div>
+
+<div id="choice-area">
+    <button id="hag-btn" class="choice-btn">✂️ 剥ぐ</button>
+    <button id="skip-btn" class="choice-btn">🙈 スキップ</button>
+</div>
+
+<button id="reveal-btn">正解発表</button>
+<button id="next-btn">次へ</button>
+
+<div id="score-box">
+    現在：<span id="correct-count">0</span>人抜き　
+    <span id="score">0</span>点
+</div>
+
+</div>
+
+<div id="result-screen" class="screen">
+    <div id="result-title">GAME OVER</div>
+    <div id="result-message"></div>
+    <button id="back-title-btn">タイトルへ戻る</button>
+</div>
+
+<script>
+const questions = [
+{
+id:"Y1",
+image:"images/Yutaka1.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"正解♡脱がさないで♡",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"帽子被ってました～。",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y2",
+image:"images/Yutaka2.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"ロン毛目指してヘアバンドしてるのばれたわ",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"ヘアバンドしてるよ～ん、もう2度とできないけどｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y3",
+image:"images/Yutaka3.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"だよね～。",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"誰がヅラじゃ！こんな薄いウィッグあるか！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y4",
+image:"images/Yutaka4.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"自毛ロン毛よ～",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"ヅラじゃねーわ。プロペシアの成果じゃ！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y5",
+image:"images/Yutaka5.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"帽子と王冠、ダブルｗ",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"王冠わかりやすいでしょｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y6",
+image:"images/Yutaka6.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"短髪、ヒゲがモテるのよｗ",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"誰がハゲじゃ！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y7",
+image:"images/Yutaka7.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"似合うでしょ？♡",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"こんなヅラねーわｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y8",
+image:"images/Yutaka8.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"3つ編みかわいいでしょ？",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"毛が細くて3つ編みできないのよ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y9",
+image:"images/Yutaka9.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"帽子好きなのよね～",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"いや、帽子帽子！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y10",
+image:"images/Yutaka10.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"ロン毛懐かしいでしょ",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"被るならもっといいのにするわｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y11",
+image:"images/Yutaka11.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"うさぎさん～",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"いや、耳ねーわｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y12",
+image:"images/Yutaka12.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"かわいいでしょ？",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"うんこしてねーわｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y13",
+image:"images/Yutaka13.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"短髪が正義！",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"いや、、どう考えても被っとらんでしょｗ",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y14",
+image:"images/Yutaka14.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"Tagboatの帽子～",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"被っとるわ！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y15",
+image:"images/Yutaka15.jpg",
+answer:"skip",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"そりゃそーよね！",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"カレー食わせるよ！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"Y16",
+image:"images/Yutaka16.jpg",
+answer:"hag",
+correctImage:"images/Yutakaseikai.jpg",
+correctComment:"この帽子お気に入り♪",
+wrongImage:"images/Yutakafuseikai.jpg",
+wrongComment:"いや、帽子！",
+character:"Yutaka",
+rarity:"normal"
+},
+{
+id:"P1",
+image:"images/Yukari1.jpg",
+answer:"skip",
+correctImage:"images/Yukariseikai.jpg",
+correctComment:"正解よ♡",
+wrongImage:"images/Yukarifuseikai.png",
+wrongComment:"ウィッグっていったのだれ？💢",
+character:"Yukari",
+rarity:"normal"
+},
+{
+id:"P2",
+image:"images/Yukari2.jpg",
+answer:"skip",
+correctImage:"images/Yukariseikai.jpg",
+correctComment:"正解よ♡",
+wrongImage:"images/Yukarifuseikai.png",
+wrongComment:"目が見えにくいんじゃないの？💢",
+character:"Yukari",
+rarity:"normal"
+},
+{
+id:"P3",
+image:"images/Yukari3.jpg",
+answer:"skip",
+correctImage:"images/Yukariseikai.jpg",
+correctComment:"正解よ♡若いでしょ？",
+wrongImage:"images/Yukarifuseikai.png",
+wrongComment:"コラっ💢",
+character:"Yukari",
+rarity:"normal"
+},
+{
+id:"P4",
+image:"images/Yukari4.png",
+answer:"hag",
+correctImage:"images/Yukariseikai.jpg",
+correctComment:"ばれた？🤗",
+wrongImage:"images/Yukarifuseikai.png",
+wrongComment:"ツノ自前じゃねーわ💢",
+character:"Yukari",
+rarity:"normal"
+},
+{
+id:"N1",
+image:"images/Nao1.jpg",
+answer:"skip",
+correctImage:"images/Naoseikai.jpg",
+correctComment:"ふんばるなお！",
+wrongImage:"images/Naofuseikai.jpg",
+wrongComment:"うんこ！",
+character:"Nao",
+rarity:"normal"
+},
+{
+id:"N2",
+image:"images/Nao2.jpg",
+answer:"hag",
+correctImage:"images/Naoseikai.jpg",
+correctComment:"正解にゃん！",
+wrongImage:"images/Naofuseikai.jpg",
+wrongComment:"猫耳はえてないよ！",
+character:"Nao",
+rarity:"normal"
+},
+{
+id:"N3",
+image:"images/Nao3.jpg",
+answer:"skip",
+correctImage:"images/Naoseikai.jpg",
+correctComment:"デザートなお！",
+wrongImage:"images/Naofuseikai.jpg",
+wrongComment:"ちょっと、沈めるよ？",
+character:"Nao",
+rarity:"normal"
+},
+{
+id:"N4",
+image:"images/Nao4.jpg",
+answer:"hag",
+correctImage:"images/Naoseikai.jpg",
+correctComment:"メイドなお！",
+wrongImage:"images/Naofuseikai.jpg",
+wrongComment:"猫耳～",
+character:"Nao",
+rarity:"normal"
+},
+{
+id:"A1",
+image:"images/Aringo1.jpg",
+answer:"hag",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"ば、ばれたか！Bリンゴが現れた！",
+wrongImage:"images/Aringofuseikai.jpg",
+wrongComment:"ふふふ、おじさんの変装もなかなかね。",
+character:"Aringo",
+rarity:"normal"
+},
+{
+id:"A2",
+image:"images/Aringo2.jpg",
+answer:"hag",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"さすがだわね！Bリンゴが現れた！",
+wrongImage:"images/Aringofuseikai.jpg",
+wrongComment:"ぺっ！",
+character:"Aringo",
+rarity:"normal"
+},
+{
+id:"A3",
+image:"images/Aringo3.jpg",
+answer:"hag",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"ウィッグ剥がないで～。Bリンゴが現れた！",
+wrongImage:"images/Aringofuseikai.jpg",
+wrongComment:"変装上手なのに何で職質されたのかしら",
+character:"Aringo",
+rarity:"normal"
+},
+{
+id:"A4",
+image:"images/Aringo4.jpg",
+answer:"hag",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"キャー、剥がないで～、私はギャルよ！Bリンゴが現れた！",
+wrongImage:"images/Aringofuseikai.jpg",
+wrongComment:"あら、バレなかったのね。おじさんとデートする？",
+character:"Aringo",
+rarity:"normal"
+},
+{
+id:"A5",
+image:"images/Aringo5.jpg",
+answer:"hag",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"おかしいなー。Bリンゴが現れた。",
+wrongImage:"images/Aringofuseikai.jpg",
+wrongComment:"わたしの魅力かしら？",
+character:"Aringo",
+rarity:"normal"
+},
+{
+id:"B1",
+image:"images/Bringo1.jpg",
+answer:"skip",
+correctImage:"images/Bringoseikai.jpg",
+correctComment:"フサフサでしょ？",
+wrongImage:"images/Bringofuseikai.jpg",
+wrongComment:"痛い痛い！おじさん、自毛だよ！",
+character:"Bringo",
+rarity:"normal"
+},
+{
+id:"B2",
+image:"images/Bringo2.jpg",
+answer:"skip",
+correctImage:"images/Bringoseikai.jpg",
+correctComment:"裸だけど髪はあるよ！",
+wrongImage:"images/Bringofuseikai.jpg",
+wrongComment:"おじさんの裸に目がくらんだわねｗ",
+character:"Bringo",
+rarity:"normal"
+},
+{
+id:"B3",
+image:"images/Bringo3.jpg",
+answer:"skip",
+correctImage:"images/Bringoseikai.jpg",
+correctComment:"漏れそうだけど，髪はフサフサだよ",
+wrongImage:"images/Bringofuseikai.jpg",
+wrongComment:"もう！自毛だってば！ゆたかママと一緒にしないで！",
+character:"Bringo",
+rarity:"normal"
+},
+{
+id:"K1",
+image:"images/Kokoro1.jpg",
+answer:"skip",
+correctImage:"images/Kokoroseikai.png",
+correctComment:"当たり前でしょ！",
+wrongImage:"images/Kokorofuseikai.png",
+wrongComment:"自毛に決まってんだろ💢",
+character:"Kokoro",
+rarity:"normal"
+},
+{
+id:"K2",
+image:"images/Kokoro2.jpg",
+answer:"skip",
+correctImage:"images/Kokoroseikai.png",
+correctComment:"当たり前でしょ！",
+wrongImage:"images/Kokorofuseikai.png",
+wrongComment:"自毛に決まってんだろ💢",
+character:"Kokoro",
+rarity:"normal"
+},
+{
+id:"K3",
+image:"images/Kokoro3.jpg",
+answer:"hag",
+correctImage:"images/Kokoroseikai.png",
+correctComment:"くろみだよ！",
+wrongImage:"images/Kokorofuseikai.png",
+wrongComment:"ツノ生えてねーわ💢",
+character:"Kokoro",
+rarity:"normal"
+},
+{
+id:"K4",
+image:"images/Kokoro4.jpg",
+answer:"hag",
+correctImage:"images/Kokoroseikai.png",
+correctComment:"白衣の天使♡",
+wrongImage:"images/Kokorofuseikai.png",
+wrongComment:"いや、帽子！誰が、白衣の悪魔だよ💢",
+character:"Kokoro",
+rarity:"normal"
+},
+{
+id:"L1",
+image:"images/Kusami1.jpg",
+answer:"hag",
+correctImage:"images/Kusamiseikai.jpg",
+correctComment:"いや～、やめてー。くさみのウィッグを剥いだら、ゆたかママが現れた。",
+wrongImage:"images/Kusamifuseikai.png",
+wrongComment:"ばれてない？あたし、かわいい？",
+character:"Kusami",
+rarity:"normal"
+},
+{
+id:"L2",
+image:"images/Kusami2.jpg",
+answer:"hag",
+correctImage:"images/Kusamiseikai.jpg",
+correctComment:"いや～、やめてー。くさみのウィッグを剥いだら、ゆたかママが現れた。",
+wrongImage:"images/Kusamifuseikai.png",
+wrongComment:"ばれてない？あたし、かわいい？",
+character:"Kusami",
+rarity:"normal"
+},
+{
+id:"S1",
+image:"images/Sena1.jpg",
+answer:"skip",
+correctImage:"images/Senaseikai.png",
+correctComment:"ですよね～。",
+wrongImage:"images/Senafuseikai.jpg",
+wrongComment:"痛い！地毛だよ！",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"S2",
+image:"images/Sena2.jpg",
+answer:"hag",
+correctImage:"images/Senaseikai.png",
+correctComment:"キャー、剥がないで～ｗ",
+wrongImage:"images/Senafuseikai.jpg",
+wrongComment:"王冠もウィッグもあるよｗ",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"S3",
+image:"images/Sena3.jpg",
+answer:"hag",
+correctImage:"images/Senaseikai.png",
+correctComment:"スヌ取らないで～。",
+wrongImage:"images/Senafuseikai.jpg",
+wrongComment:"さすがにスヌ埋め込んでないｗ",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"S4",
+image:"images/Sena4.jpg",
+answer:"hag",
+correctImage:"images/Senaseikai.png",
+correctComment:"やっぱバレた？スヌタロウが現れた！",
+wrongImage:"images/Sunutarou1.jpg",
+wrongComment:"スヌーピーに紛れ込めたかな",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"S5",
+image:"images/Sena5.jpg",
+answer:"hag",
+correctImage:"images/Senaseikai.png",
+correctComment:"お気に入りのウィッグなのにｗスヌタロウが現れた！",
+wrongImage:"images/Sunutarou1.jpg",
+wrongComment:"イエーイ、アイーン",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"S6",
+image:"images/Sena6.jpg",
+answer:"hag",
+correctImage:"images/Senaseikai.png",
+correctComment:"ツノかわいい～。",
+wrongImage:"images/Senafuseikai.jpg",
+wrongComment:"ツノもウィッグもダブルｗ",
+character:"Sena",
+rarity:"normal"
+},
+{
+id:"O1",
+image:"images/Arushindo.jpg",
+answer:"skip",
+correctImage:"images/Aringoseikai.jpg",
+correctComment:"アルシンドになっちゃーうよ",
+wrongImage:"images/Kusamiseikai.jpg",
+wrongComment:"タダのハゲだわ",
+character:"Arushindo",
+rarity:"normal"
+},
+{
+id:"O2",
+image:"images/Kanda1.jpg",
+answer:"hag",
+correctImage:"images/Kandaseikai.png",
+correctComment:"バレましたか～。",
+wrongImage:"images/Kandafuseikai.png",
+wrongComment:"意外とばれないもんですね～",
+character:"Kanda",
+rarity:"normal"
+}
+];
+
+let currentQuestion = 0;
+let correctCount = 0;
+let score = 0;
+let startTime = 0;
+let timerId = null;
+
+let pendingChoice = null;
+let pendingElapsed = 0;
+let pendingCorrect = false;
+let lastQuestionIndex = -1;
+
+function getTodayKey(){
+    const today = new Date().toISOString().slice(0,10);
+    return "wighagiBest_" + today;
+}
+
+function loadTodayBest(){
+    const saved = localStorage.getItem(getTodayKey());
+
+    if(saved){
+        return JSON.parse(saved);
+    }
+
+    return { count:0, score:0 };
+}
+
+function saveTodayBestIfNeeded(){
+    const best = loadTodayBest();
+
+    if(
+        score > best.score ||
+        (score === best.score && correctCount > best.count)
+    ){
+        const newBest = { count:correctCount, score:score };
+        localStorage.setItem(getTodayKey(), JSON.stringify(newBest));
+        updateBestDisplay();
+        return true;
+    }
+
+    updateBestDisplay();
+    return false;
+}
+
+function updateBestDisplay(){
+    const best = loadTodayBest();
+
+    document.getElementById("best-count-main").textContent = best.count;
+    document.getElementById("best-score-main").textContent = best.score;
+}
+
+function showScreen(screenId){
+    document.getElementById("main-screen").style.display = "none";
+    document.getElementById("rule-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "none";
+    document.getElementById(screenId).style.display = "block";
+}
+
+function startGame(){
+    currentQuestion = 0;
+    correctCount = 0;
+    score = 0;
+    lastQuestionIndex = -1;
+    pendingChoice = null;
+    pendingElapsed = 0;
+    pendingCorrect = false;
+    showScreen("game-screen");
+    showQuestion();
+}
+
+function showQuestion(){
+    if(currentQuestion >= questions.length){
+        gameOver("全問クリア！すごい！");
+        return;
+    }
+
+    let randomIndex;
+
+    do{
+        randomIndex =
+        Math.floor(Math.random() * questions.length);
+    }
+    while(
+        randomIndex === lastQuestionIndex &&
+        questions.length > 1
+    );
+
+    lastQuestionIndex = randomIndex;
+
+    const q = questions[randomIndex];
+
+    currentQuestion = randomIndex;
+
+    document.getElementById("question-image").src = q.image;
+    document.getElementById("correct-count").textContent = correctCount;
+    document.getElementById("score").textContent = score;
+    document.getElementById("time-left").textContent = "3.0";
+    document.getElementById("question-text").textContent = "この人は……？";
+
+    document.getElementById("choice-area").style.display = "flex";
+    document.getElementById("reveal-btn").style.display = "none";
+    document.getElementById("next-btn").style.display = "none";
+
+    pendingChoice = null;
+    pendingElapsed = 0;
+    pendingCorrect = false;
+
+    startTime = Date.now();
+
+    if(timerId){
+        clearInterval(timerId);
+    }
+
+    timerId = setInterval(function(){
+        const elapsed = (Date.now() - startTime) / 1000;
+        const remain = 3 - elapsed;
+
+        document.getElementById("time-left").textContent = Math.max(0, remain).toFixed(1);
+
+        if(remain <= 0){
+            clearInterval(timerId);
+            gameOver("時間切れ！3秒以内に判断してね！");
+        }
+    }, 100);
+}
+
+function chooseAnswer(choice){
+    pendingChoice = choice;
+    pendingElapsed = (Date.now() - startTime) / 1000;
+
+    clearInterval(timerId);
+
+    if(choice === "hag"){
+        document.getElementById("question-image").src = "images/wighagichuu.png";
+        document.getElementById("question-text").textContent = "ウィッグを剥いでいます……";
+    }else{
+        document.getElementById("question-text").textContent = "スキップしました……";
+    }
+
+    document.getElementById("choice-area").style.display = "none";
+    document.getElementById("reveal-btn").style.display = "block";
+}
+
+function revealAnswer(){
+    const q = questions[currentQuestion];
+
+    pendingCorrect = (pendingChoice === q.answer);
+
+    if(pendingCorrect){
+        document.getElementById("question-image").src = q.correctImage;
+        document.getElementById("question-text").innerHTML = "⭕ " + q.correctComment;
+
+        let addScore = 0;
+
+        if(pendingElapsed <= 1){
+            addScore = 30;
+        }else if(pendingElapsed <= 2){
+            addScore = 20;
+        }else if(pendingElapsed <= 3){
+            addScore = 5;
+        }
+
+        score += addScore;
+        correctCount++;
+
+        document.getElementById("score").textContent = score;
+        document.getElementById("correct-count").textContent = correctCount;
+        document.getElementById("question-text").innerHTML += "<br>+" + addScore + "点";
+
+        document.getElementById("reveal-btn").style.display = "none";
+        document.getElementById("next-btn").style.display = "block";
+
+    }else{
+        document.getElementById("question-image").src = q.wrongImage;
+        document.getElementById("question-text").innerHTML = "❌ " + q.wrongComment + "<br><br>GAME OVER";
+
+        document.getElementById("reveal-btn").style.display = "none";
+        document.getElementById("next-btn").textContent = "結果を見る";
+        document.getElementById("next-btn").style.display = "block";
+    }
+}
+
+function nextStep(){
+    if(pendingCorrect){
+        document.getElementById("next-btn").textContent = "次へ";
+        showQuestion();
+    }else{
+        gameOver("不正解！剥ぎ判断ミス！");
+    }
+}
+
+function gameOver(message){
+    if(timerId){
+        clearInterval(timerId);
+    }
+
+    const isNewRecord = saveTodayBestIfNeeded();
+    const best = loadTodayBest();
+
+    showScreen("result-screen");
+
+    let newRecordText = "";
+
+    if(isNewRecord){
+        newRecordText = "🎉 NEW RECORD！<br><br>";
+    }
+
+    document.getElementById("result-message").innerHTML =
+        newRecordText +
+        message + "<br><br>" +
+        "記録：" + correctCount + "人抜き<br>" +
+        "得点：" + score + "点<br><br>" +
+        "本日のベスト：" + best.count + "人抜き / " + best.score + "点";
+}
+
+updateBestDisplay();
+
+document.getElementById("start-btn").addEventListener("click", function(){
+    showScreen("rule-screen");
+});
+
+document.getElementById("ranking-btn").addEventListener("click", function(){
+    alert("ランキングは今後実装予定です！");
+});
+
+document.getElementById("rule-start-btn").addEventListener("click", function(){
+    startGame();
+});
+
+document.getElementById("hag-btn").addEventListener("click", function(){
+    chooseAnswer("hag");
+});
+
+document.getElementById("skip-btn").addEventListener("click", function(){
+    chooseAnswer("skip");
+});
+
+document.getElementById("reveal-btn").addEventListener("click", function(){
+    revealAnswer();
+});
+
+document.getElementById("next-btn").addEventListener("click", function(){
+    nextStep();
+});
+
+document.getElementById("back-title-btn").addEventListener("click", function(){
+    updateBestDisplay();
+    showScreen("main-screen");
+});
+</script>
+
+</body>
+</html>
