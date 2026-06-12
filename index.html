@@ -218,6 +218,45 @@ body{
     }
 }
 
+#photo-box{
+    position:relative;
+}
+
+#bonus-question-panel{
+    position:absolute;
+    left:8%;
+    top:16%;
+    width:84%;
+    height:58%;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+    box-sizing:border-box;
+    font-size:34px;
+    line-height:1.5;
+    font-weight:bold;
+    color:white;
+    text-shadow:0 0 8px #ff00aa, 0 0 14px #000;
+    pointer-events:none;
+}
+
+#bonus-question-panel .bonus-title{
+    color:#ffd84d;
+    font-size:30px;
+    margin-bottom:20px;
+}
+
+@media (max-width:480px){
+    #bonus-question-panel{
+        font-size:26px;
+    }
+    #bonus-question-panel .bonus-title{
+        font-size:24px;
+    }
+}
+
 </style>
 
 </head>
@@ -288,6 +327,7 @@ body{
 
 <div id="photo-box">
     <img id="question-image" src="" alt="問題画像">
+    <div id="bonus-question-panel"></div>
 </div>
 
 <div id="question-text">この人は……？</div>
@@ -831,6 +871,18 @@ wrongImage:"Yoshimifuseikai.png",
 wrongComment:"帽子あるよ、それそれ",
 character:"Yoshimi",
 rarity:"normal"
+},
+{
+id:"Q1",
+type:"bonus",
+question:"ゆたかママの玉の裏は臭み？",
+answer:"yes",
+correctImage:"Yutakatama.jpg",
+correctComment:"臭いからかわ伸ばしてマントにして飛んで乾かしてるんだよ♡",
+wrongImage:"Yutakatama1.jpg",
+wrongComment:"玉蹴るわよｗ",
+character:"Yutaka",
+rarity:"rare"
 }
 ];
 
@@ -905,20 +957,31 @@ function startGame(){
 }
 
 function showQuestion(){
-    if(currentQuestion >= questions.length){
-        gameOver("全問クリア！すごい！");
-        return;
+    const normalIndexes = [];
+    const bonusIndexes = [];
+
+    for(let i = 0; i < questions.length; i++){
+        if(questions[i].type === "bonus"){
+            bonusIndexes.push(i);
+        }else{
+            normalIndexes.push(i);
+        }
     }
 
     let randomIndex;
+    const shouldShowBonus =
+        bonusIndexes.length > 0 &&
+        Math.random() < 0.05;
+
+    const targetIndexes = shouldShowBonus ? bonusIndexes : normalIndexes;
 
     do{
         randomIndex =
-        Math.floor(Math.random() * questions.length);
+        targetIndexes[Math.floor(Math.random() * targetIndexes.length)];
     }
     while(
         randomIndex === lastQuestionIndex &&
-        questions.length > 1
+        targetIndexes.length > 1
     );
 
     lastQuestionIndex = randomIndex;
@@ -927,15 +990,39 @@ function showQuestion(){
 
     currentQuestion = randomIndex;
 
-    document.getElementById("question-image").src = q.image;
     document.getElementById("correct-count").textContent = correctCount;
     document.getElementById("score").textContent = score;
     document.getElementById("time-left").textContent = "3.0";
-    document.getElementById("question-text").textContent = "この人は……？";
 
     document.getElementById("choice-area").style.display = "flex";
     document.getElementById("reveal-btn").style.display = "none";
     document.getElementById("next-btn").style.display = "none";
+
+    const bonusPanel = document.getElementById("bonus-question-panel");
+
+    if(q.type === "bonus"){
+        document.getElementById("question-image").src = "Quize.png";
+
+        bonusPanel.style.display = "flex";
+        bonusPanel.innerHTML =
+            '<div><div class="bonus-title">🎁 BONUS QUESTION</div>' +
+            q.question +
+            '</div>';
+
+        document.getElementById("question-text").textContent = "ボーナス問題！";
+        document.getElementById("hag-btn").innerHTML = "はい";
+        document.getElementById("skip-btn").innerHTML = "いいえ";
+
+    }else{
+        document.getElementById("question-image").src = q.image;
+
+        bonusPanel.style.display = "none";
+        bonusPanel.innerHTML = "";
+
+        document.getElementById("question-text").textContent = "この人は……？";
+        document.getElementById("hag-btn").innerHTML = "✂️ 剥ぐ";
+        document.getElementById("skip-btn").innerHTML = "🙈 スキップ";
+    }
 
     pendingChoice = null;
     pendingElapsed = 0;
@@ -961,14 +1048,26 @@ function showQuestion(){
 }
 
 function chooseAnswer(choice){
+    const q = questions[currentQuestion];
+
+    if(q.type === "bonus"){
+        if(choice === "hag"){
+            choice = "yes";
+        }else{
+            choice = "no";
+        }
+    }
+
     pendingChoice = choice;
     pendingElapsed = (Date.now() - startTime) / 1000;
 
     clearInterval(timerId);
 
-    if(choice === "hag"){
+    if(choice === "hag" && q.type !== "bonus"){
         document.getElementById("question-image").src = "wighagichuu.png";
         document.getElementById("question-text").textContent = "ウィッグを剥いでいます……";
+    }else if(q.type === "bonus"){
+        document.getElementById("question-text").textContent = "回答しました……";
     }else{
         document.getElementById("question-text").textContent = "スキップしました……";
     }
@@ -981,6 +1080,9 @@ function revealAnswer(){
     const q = questions[currentQuestion];
 
     pendingCorrect = (pendingChoice === q.answer);
+
+    document.getElementById("bonus-question-panel").style.display = "none";
+    document.getElementById("bonus-question-panel").innerHTML = "";
 
     if(pendingCorrect){
         document.getElementById("question-image").src = q.correctImage;
