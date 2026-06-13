@@ -1001,7 +1001,8 @@ function showQuestion(){
     const bonusPanel = document.getElementById("bonus-question-panel");
 
     if(q.type === "bonus"){
-        document.getElementById("question-image").src = "Quize.png";
+        document.getElementById("question-image").style.display = "none";
+        document.getElementById("question-image").src = "";
 
         bonusPanel.style.display = "flex";
         bonusPanel.innerHTML =
@@ -1014,6 +1015,7 @@ function showQuestion(){
         document.getElementById("skip-btn").innerHTML = "いいえ";
 
     }else{
+        document.getElementById("question-image").style.display = "block";
         document.getElementById("question-image").src = q.image;
 
         bonusPanel.style.display = "none";
@@ -1083,6 +1085,7 @@ function revealAnswer(){
 
     document.getElementById("bonus-question-panel").style.display = "none";
     document.getElementById("bonus-question-panel").innerHTML = "";
+    document.getElementById("question-image").style.display = "block";
 
     if(pendingCorrect){
         document.getElementById("question-image").src = q.correctImage;
